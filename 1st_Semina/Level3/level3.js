@@ -43,71 +43,49 @@ const members = [
   { name: "허유정", part: "Server", group: "YB" },
 ];
 
-// 팀원을 랜덤으로 뽑아주는 함수
-function randomSelector() {
-  let randomList = [];
-  while (randomList.length < members.length) {
-    let randomNumber = Math.floor(Math.random() * 37)
-  
-    if (randomList.includes(randomNumber)) {
-      continue;
-    }
-    randomList.push(randomNumber);
-  }
-  
-  return randomList;
-}
+// 각 멤버를 저장할 배열
+let ybList = [];
+let obList = [];
 
-let randomList = randomSelector();
-
-console.log(randomList);
-
-// 각 팀에 OB 한 명 YB 두 명을 포함
+// 팀을 저장할 배열
 let teamJsonArray = new Array();
 let team = [];
+let teamCount = 0;
 
-let index = 0;
-let OBCount = 0;
-let YBCount = 0;
-
-while (randomList.length > 0) {
-  let member = members[randomList[index]];
-
-  for (let i = 0; i < team.length; i++) {
-    if (team[i].group === "YB") {
-      YBCount += 1;
-    } else {
-      OBCount += 1;
-    }
-  }
-
+// YB & OB에 따라서 멤버들 분리
+members.map(member => {
   if (member.group === "YB") {
-    if (YBCount >= 2) {
-      index += 1;
-      continue;
-    } else {
-      team.push(member);
-      randomList.splice(index, 1);
-      index = 0;
-    }
+    ybList.push(member);
   } else {
-    if (OBCount >= 1) {
-      index += 1;
-      continue;
-    } else {
-      team.push(member);
-      randomList.splice(index, 1);
-      index = 0;
-    }
+    obList.push(member);
+  }
+});
+
+// 팀이 8개 만들어 질 때까지 YB2명 OB2명으로 팀 구성
+while (teamCount < 8) {
+
+  // YB에서 랜덤으로 2명 뽑아서 팀에 추가
+  for (let i = 0; i < 2; i++) {
+    const index = Math.floor(Math.random() * ybList.length);
+    team.push(ybList[index]);
+    ybList.splice(index, 1);
   }
 
-  if (team.length === 3) {
-    teamJsonArray.push(team);
-    team = [];
-    index = 0;
-    YBCount = 0;
-    OBCount = 0;
+  // OB에서 랜덤으로 2명 뽑아서 팀에 추가
+  for (let i = 0; i < 2; i++) {
+    const index = Math.floor(Math.random() * obList.length);
+    team.push(obList[index]);
+    obList.splice(index, 1);
   }
+
+  teamJsonArray.push(team);
+  team = [];
+  teamCount++;
+}
+
+// 남은 YB 5명 차례대로 팀 배정
+for (let i = 0; i < ybList.length; i++) {
+  teamJsonArray[i].push(ybList[i]);
 }
 
 console.log(teamJsonArray);
