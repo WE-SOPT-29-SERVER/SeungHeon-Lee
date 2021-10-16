@@ -1,0 +1,14 @@
+<!DOCTYPE html> 
+<html>
+    <head>
+        <title><%= title %></title>
+    </head>
+    <body>
+        <div>글 쓰기</div>
+        <form action="/api/blog/result" method="post">
+            <input type="text" name="text" placeholder="Enter title here">
+            <input type="text" name="content" placeholder="Enter content here">
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>
