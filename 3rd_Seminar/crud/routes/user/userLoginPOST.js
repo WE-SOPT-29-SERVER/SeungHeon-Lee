@@ -1,6 +1,7 @@
 const util = require("../../lib/util");
 const responseMessage = require("../../constants/responseMessage");
 const statusCode = require("../../constants/statusCode");
+const users = require("../../dbMockup/user");
 
 // /user/login POST method
 module.exports = async(req, res) => {

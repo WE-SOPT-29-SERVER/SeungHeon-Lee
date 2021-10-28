@@ -13,9 +13,6 @@ module.exports = {
     NO_USER: "존재하지 않는 회원입니다.",
     MISS_MATCH_PW: "비밀번호가 맞지 않습니다.",
 
-    // 정보수정
-    USER_UPDATE_SUCCESS: "유저 정보 업데이트 성공",
-
     // 프로필 조회
     READ_PROFILE_SUCCESS: "프로필 조회 성공",
 };
