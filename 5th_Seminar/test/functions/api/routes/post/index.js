@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.use('/user', require('./user'));
-router.use('/post', require('./post'));
+router.get('/list', require('./postListGET'));
+router.get('/:postId', require('./postGET'));
 
 module.exports = router;
