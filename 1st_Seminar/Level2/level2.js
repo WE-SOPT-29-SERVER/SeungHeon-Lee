@@ -40,4 +40,4 @@ function memberInfo(members) {
 }
 
 // 함수 호출
-memberInfo(members); 
+memberInfo(members);
