@@ -22,4 +22,10 @@ module.exports = {
     POST_SUCCESS: "게시글 생성 성공",
     POST_UPDATE_SUCCESS: "게시글 업데이트 성공",
     DELETE_POST: "게시글 삭제 성공",
+
+    // 유저 수정
+    USER_UPDATE_SUCCESS: "유저 정보 수정 성공",
+
+    // 유저 삭제 성공
+    USER_DELETE_SUCCESS: "유저 삭제 성공",
 };
