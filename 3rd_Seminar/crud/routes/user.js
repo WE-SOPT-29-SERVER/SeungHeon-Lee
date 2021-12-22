@@ -1,96 +1,141 @@
 const express = require("express");
-const router = express.Router()
-const util = require("../lib/util");
-const responseMessage = require("../constants/responseMessage");
-const statusCode = require("../constants/statusCode");
+const router = express.Router();
 
-let users = require("../dbMockup/user");
+const statusCode = require("./../constants/statusCode");
+const responseMessage = require("./../constants/responseMessage");
+const util = require("./../lib/util");
+const users = require("./../dbMockup/user");
 
-// /user/signup POST method
-router.post("/signup", (req, res) => {
+router.post("/signup", async(req, res) => {
+    const {id, name, password, email} = req.body;
 
-    // destructuring assignment
-    const {email, name, password} = req.body;
-
-    if (!email || !name || !password) {
-        return res.status(400).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+    if (!id || !name || !password || !email) {
+        return res.status(400).send({ status: 400, message: "BAD REQURES" });
     }
 
-    const existUser = users.filter(object => object.email === email);
-
-    if (existUser) {
-        return res.status(400).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ALREADY_EMAIL));
+    const alreadyUser = users.filter(user => user.email === email).length > 0;
+    if (alreadyUser) {
+        return res.status(400).send({ status: 400, message: "ALREADY EMAIL" });
     }
 
-    const newUser = {
-        id: users.length + 1,
-        name,
-        password,
-        email
-    };
+    const newUser = {id, name, password, email};
 
-    res.status(statusCode.OK).send(
-        util.success(
-            statusCode.OK,
-            responseMessage.CREATED_USER,
-            newUser
-        )
-    );
+    users.push(newUser);
+
+    res.status(200).send(newUser);
 });
 
-// /user/login POST method
-router.post("/login", async (req, res) => {
-    
-    const {email, password} = req.body;
+router.post("/login", async(req, res) => {
+    const { email, password } = req.body;
 
     if (!email || !password) {
-        return res.status(400).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE),
+        );
     }
 
-    const user = users.filter(object => object.email === email)[0];
+    const user = users.filter(user => user.email === email)[0];
 
     if (!user) {
-        return res.status(400).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER),
+        );
     }
-
 
     if (user.password !== password) {
-        return res.status(400).send(util.fail(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_PW));
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_PW),
+        );
     }
 
-    const loginUser = {
-        id : user.id,
-        name : user.name,
-        email : user.email
+    res.status(statusCode.OK).send(
+        util.success(statusCode.OK, responseMessage.LOGIN_SUCCESS, {
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+            },
+        }),
+    );
+});
+
+router.get("/profile/:id", async(req, res) => {
+    const { id } = req.params;
+
+    const user = users.filter(user => user.id === Number(id))[0];
+    console.log(user);
+
+    if (!user) {
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER),
+        );
     }
+
+    res.status(statusCode.OK).send(
+        util.success(statusCode.OK, responseMessage.READ_PROFILE_SUCCESS, {
+            user: {
+                name: user.name,
+                email: user.email,
+            },
+        }),
+    );
+})
+
+router.put("/:id", async (req, res) => {
+    const { id } = req.params;
+    const { newName } = req.body;
+
+    if (!id || !newName) {
+        return res
+            .status(statusCode.BAD_REQUEST)
+            .send(
+                util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE),
+            );
+    }
+
+    const existingUser = users.filter(user => user.id === Number(id))[0];
+
+    if (!existingUser) {
+        return res
+            .status(statusCode.BAD_REQUEST)
+            .send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));
+    }
+
+    const updatedUser = { ...existingUser, name: newName };
 
     res.status(statusCode.OK).send(
         util.success(
             statusCode.OK,
-            responseMessage.LOGIN_SUCCESS,
-            loginUser
-        )
+            responseMessage.USER_UPDATE_SUCCESS,
+            updatedUser,
+        ),
     );
 });
 
-// /user GET method
-router.get("/", (req, res) => {
+router.delete("/:id", async (req, res) => {
+    const { id } = req.params;
 
-});
+    if (!id) {
+        return res
+            .status(statusCode.BAD_REQUEST)
+            .send(
+                util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE),
+            );
+    }
 
-// /user/:id GET method
-router.get("/:id", (req, res) => {
+    const existingUser = users.filter(user => user.id === Number(id))[0];
 
-});
+    if (!existingUser) {
+        return res
+            .status(statusCode.BAD_REQUEST)
+            .send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));
+    }
 
-// /user/:id PUT method
-router.put("/:id", (req, res) => {
+    const newUsers = users.filter(user => user.id !== Number(id));
 
-});
-
-// /user/:id DELETE method
-router.delete("/:id", (req, res) => {
-
+    res.status(statusCode.OK).send(
+        util.success(
+            statusCode.OK,
+            responseMessage.USER_DELETE_SUCCESS,
+            newUsers,
+        ),
+    );
 });
 
 module.exports = router;
