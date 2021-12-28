@@ -1,6 +1,6 @@
 var express = require('express');
 const blog = require('./api/blog');
-const user = require('./api/user');
+const user = require('./api/users');
 var router = express.Router();
 
 /* GET home page. */
